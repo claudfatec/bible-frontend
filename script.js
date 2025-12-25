@@ -1,29 +1,19 @@
-// URLs de dados
 const INDEX_URL = "https://raw.githubusercontent.com/claudfatec/forkbible/refs/heads/master/json/index.json";
 const BASE_URL  = "https://raw.githubusercontent.com/claudfatec/forkbible/refs/heads/master/json";
 
-// Estado
-let bibleData = null; // array de livros da versão atual
+let bibleData = null;
 
-// Elementos da UI
 const versionSelect = document.getElementById("versionSelect");
 const bookSelect    = document.getElementById("bookSelect");
 const chapterInput  = document.getElementById("chapterInput");
 const verseInput    = document.getElementById("verseInput");
-
-const loadChapterBtn       = document.getElementById("loadChapterBtn");
-const searchInput          = document.getElementById("searchInput");
-const searchBtn            = document.getElementById("searchBtn");
-const clearSearchBtn       = document.getElementById("clearSearchBtn");
-
-const statusEl             = document.getElementById("status");
-const chapterDisplay       = document.getElementById("chapterDisplay");
-const chapterTitle         = document.getElementById("chapterTitle");
-const chapterText          = document.getElementById("chapterText");
+const statusEl      = document.getElementById("status");
+const chapterDisplay = document.getElementById("chapterDisplay");
+const chapterTitle   = document.getElementById("chapterTitle");
+const chapterText    = document.getElementById("chapterText");
 const searchResultsSection = document.getElementById("searchResults");
-const resultsList          = document.getElementById("resultsList");
+const resultsList    = document.getElementById("resultsList");
 
-// Mapa opcional de abreviações -> nomes (exibe no select)
 const BOOK_NAME_MAP = {
   gn: "Gênesis", ex: "Êxodo", lv: "Levítico", nm: "Números", dt: "Deuteronômio",
   js: "Josué", jz: "Juízes", rt: "Rute", "1sm": "1 Samuel", "2sm": "2 Samuel",
@@ -41,212 +31,119 @@ const BOOK_NAME_MAP = {
   "1jo": "1 João", "2jo": "2 João", "3jo": "3 João", jd: "Judas", ap: "Apocalipse"
 };
 
-// Utilidades UI
 function setStatus(msg, isError = false) {
   statusEl.textContent = msg || "";
-  statusEl.classList.toggle("error", isError);
-}
-function clearChapter() {
-  chapterDisplay.hidden = true;
-  chapterTitle.textContent = "";
-  chapterText.innerHTML = "";
-}
-function showChapter(bookAbbrev, chapterNum, verses) {
-  const title = BOOK_NAME_MAP[bookAbbrev] || bookAbbrev.toUpperCase();
-  chapterTitle.textContent = `${title} ${chapterNum}`;
-  chapterText.innerHTML = verses
-    .map((v, i) => `<strong>${i + 1}</strong> ${escapeHtml(v)}`)
-    .join("<br><br>");
-  chapterDisplay.hidden = false;
-}
-function hideSearchResults() {
-  searchResultsSection.hidden = true;
-  resultsList.innerHTML = "";
-}
-function showSearchResults(items) {
-  resultsList.innerHTML = "";
-  if (!items.length) {
-    resultsList.innerHTML = "<li class='result-item'>Nenhum resultado.</li>";
-  } else {
-    items.forEach(it => {
-      const li = document.createElement("li");
-      li.className = "result-item";
-      li.innerHTML = `
-        <div class="meta">${escapeHtml(it.book)} ${it.chapter}:${it.verse}</div>
-        <div class="snippet">${escapeHtml(it.text)}</div>
-      `;
-      resultsList.appendChild(li);
-    });
-  }
-  searchResultsSection.hidden = false;
-}
-function escapeHtml(str) {
-  return String(str)
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;").replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
+  statusEl.className = isError ? "error" : "";
 }
 
-// Fluxo de inicialização
+function escapeHtml(str) {
+  return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
 async function initVersions() {
   try {
-    setStatus("Carregando lista de versões...");
+    setStatus("Carregando...");
     const indexData = await fetch(INDEX_URL).then(r => r.json());
-
     versionSelect.innerHTML = "";
-    // Cria optgroups por idioma e opções por versão (abbreviation)
     indexData.forEach(lang => {
       const group = document.createElement("optgroup");
       group.label = lang.language;
       lang.versions.forEach(v => {
-        const opt = document.createElement("option");
-        opt.value = v.abbreviation; // ex.: pt_nvi
-        opt.textContent = `${v.name} (${v.abbreviation})`;
+        const opt = new Option(`${v.name} (${v.abbreviation})`, v.abbreviation);
         group.appendChild(opt);
       });
       versionSelect.appendChild(group);
     });
-
-    setStatus("");
-    // Carrega a primeira versão automaticamente
-    if (versionSelect.value) {
-      await loadVersion(versionSelect.value);
-    }
+    if (versionSelect.value) await loadVersion(versionSelect.value);
   } catch (err) {
-    console.error(err);
-    setStatus("Erro ao carregar index.json.", true);
+    setStatus("Erro ao carregar lista.", true);
   }
 }
 
 async function loadVersion(versionId) {
-  const url = `${BASE_URL}/${versionId}.json`;
   try {
     setStatus("Carregando versão...");
-    const resp = await fetch(url);
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    bibleData = await resp.json(); // array de livros: [{abbrev, chapters: [][]}, ...]
-
-    // Preenche livros com base em abbrev
+    const resp = await fetch(`${BASE_URL}/${versionId}.json`);
+    bibleData = await resp.json();
     bookSelect.innerHTML = "";
     bibleData.forEach(book => {
-      const opt = document.createElement("option");
-      opt.value = book.abbrev;
-      opt.textContent = BOOK_NAME_MAP[book.abbrev] || book.abbrev.toUpperCase();
-      bookSelect.appendChild(opt);
+      bookSelect.add(new Option(BOOK_NAME_MAP[book.abbrev] || book.abbrev.toUpperCase(), book.abbrev));
     });
-
-    clearChapter();
-    hideSearchResults();
     setStatus("");
   } catch (err) {
-    console.error(err);
-    setStatus("Erro ao carregar a versão selecionada.", true);
+    setStatus("Erro ao carregar versão.", true);
   }
 }
 
-// Exibir capítulo inteiro
 function loadChapter() {
-  hideSearchResults();
-  clearChapter();
-
-  const bookId  = bookSelect.value;
-  const chapter = Number(chapterInput.value);
-
-  if (!bookId || !chapter) {
-    setStatus("Selecione o livro e informe o capítulo.", true);
-    return;
-  }
+  const bookId = bookSelect.value;
+  const chapterNum = Number(chapterInput.value);
   const book = bibleData?.find(b => b.abbrev === bookId);
-  if (!book) {
-    setStatus("Livro não encontrado nesta versão.", true);
-    return;
-  }
-  const verses = book.chapters[chapter - 1];
-  if (!Array.isArray(verses)) {
-    setStatus("Capítulo não encontrado.", true);
+  const verses = book?.chapters[chapterNum - 1];
+
+  if (!verses) {
+    setStatus("Selecione um capítulo válido.", true);
     return;
   }
 
-  showChapter(bookId, chapter, verses);
+  searchResultsSection.hidden = true;
+  chapterTitle.textContent = `${BOOK_NAME_MAP[bookId] || bookId.toUpperCase()} ${chapterNum}`;
+  
+  const verseToHighlight = Number(verseInput.value);
+  chapterText.innerHTML = verses.map((v, i) => {
+    const n = i + 1;
+    const txt = escapeHtml(v);
+    return n === verseToHighlight 
+      ? `<strong>${n}</strong> <mark>${txt}</mark>` 
+      : `<strong>${n}</strong> ${txt}`;
+  }).join("<br><br>");
 
-  // Se o usuário informou um versículo, podemos rolar/destacar opcionalmente
-  const verseNum = Number(verseInput.value);
-  if (verseNum && verseNum >= 1 && verseNum <= verses.length) {
-    // Destaque visual simples adicionando <mark> ao versículo
-    const html = verses
-      .map((v, i) => {
-        const num = i + 1;
-        const text = escapeHtml(v);
-        if (num === verseNum) {
-          return `<strong>${num}</strong> <mark>${text}</mark>`;
-        }
-        return `<strong>${num}</strong> ${text}`;
-      })
-      .join("<br><br>");
-    chapterText.innerHTML = html;
-
-    // Rolar até o trecho destacado (heurística simples)
-    const firstMark = chapterText.querySelector("mark");
-    if (firstMark) firstMark.scrollIntoView({ behavior: "smooth", block: "center" });
-  }
-
+  chapterDisplay.hidden = false;
   setStatus("");
+
+  // UX Mobile: Rolar para o texto e fechar teclado
+  document.activeElement.blur();
+  chapterDisplay.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-// Busca por palavra-chave na versão carregada
 function searchKeyword() {
-  clearChapter();
-
-  const query = (searchInput.value || "").trim().toLowerCase();
-  if (!query) {
-    setStatus("Digite uma palavra‑chave para buscar.", true);
-    return;
-  }
-  if (!Array.isArray(bibleData) || bibleData.length === 0) {
-    setStatus("Nenhuma versão carregada para buscar.", true);
-    return;
-  }
+  const query = document.getElementById("searchInput").value.trim().toLowerCase();
+  if (!query) return;
 
   const results = [];
   bibleData.forEach(book => {
-    book.chapters.forEach((chapter, ci) => {
-      chapter.forEach((verse, vi) => {
-        const text = String(verse);
-        if (text.toLowerCase().includes(query)) {
+    book.chapters.forEach((chap, ci) => {
+      chap.forEach((v, vi) => {
+        if (v.toLowerCase().includes(query)) {
           results.push({
-            book: BOOK_NAME_MAP[book.abbrev] || book.abbrev.toUpperCase(),
-            chapter: ci + 1,
-            verse: vi + 1,
-            text
+            book: BOOK_NAME_MAP[book.abbrev] || book.abbrev,
+            chapter: ci + 1, verse: vi + 1, text: v
           });
         }
       });
     });
   });
 
-  showSearchResults(results);
-  setStatus(results.length ? "" : "Nenhum resultado encontrado.");
+  resultsList.innerHTML = results.length ? results.map(r => `
+    <li class="result-item">
+      <div class="meta">${r.book} ${r.chapter}:${r.verse}</div>
+      <div class="snippet">${escapeHtml(r.text)}</div>
+    </li>`).join("") : "<li>Sem resultados.</li>";
+
+  chapterDisplay.hidden = true;
+  searchResultsSection.hidden = false;
+  
+  document.activeElement.blur();
+  searchResultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 // Eventos
-versionSelect.addEventListener("change", async () => {
-  clearChapter();
-  hideSearchResults();
-  await loadVersion(versionSelect.value);
+versionSelect.addEventListener("change", () => loadVersion(versionSelect.value));
+document.getElementById("loadChapterBtn").addEventListener("click", loadChapter);
+document.getElementById("searchBtn").addEventListener("click", searchKeyword);
+document.getElementById("clearSearchBtn").addEventListener("click", () => {
+  document.getElementById("searchInput").value = "";
+  searchResultsSection.hidden = true;
 });
 
-bookSelect.addEventListener("change", () => {
-  clearChapter();
-  hideSearchResults();
-});
-
-loadChapterBtn.addEventListener("click", loadChapter);
-searchBtn.addEventListener("click", searchKeyword);
-clearSearchBtn.addEventListener("click", () => {
-  searchInput.value = "";
-  hideSearchResults();
-  setStatus("");
-});
-
-// Inicialização
 initVersions();

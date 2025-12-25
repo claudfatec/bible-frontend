@@ -8,6 +8,7 @@
   --border: #1f2937;
   --accent: #34d399;
   --danger: #f87171;
+  --touch-target: 48px;
 }
 
 * { box-sizing: border-box; }
@@ -16,7 +17,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: system-ui, sans-serif;
+  font-family: system-ui, -apple-system, sans-serif;
 }
 
 .app-header {
@@ -24,21 +25,14 @@ body {
   text-align: center;
 }
 
-.app-header h1 {
-  margin: 0;
-  font-size: 1.8rem;
-}
-
-.subtitle {
-  margin: 8px 0 0;
-  color: var(--muted);
-  font-size: .95rem;
-}
-
+/* Layout Base: Mobile (Pilha única) */
 .container {
-  max-width: 960px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 16px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .controls, .output {
@@ -51,7 +45,7 @@ body {
 .field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   margin-bottom: 12px;
 }
 
@@ -66,7 +60,8 @@ select, input {
   color: var(--text);
   padding: 10px 12px;
   border-radius: 8px;
-  outline: none;
+  min-height: var(--touch-target);
+  font-size: 16px; /* Evita auto-zoom no iOS */
 }
 
 .row {
@@ -76,9 +71,9 @@ select, input {
 }
 
 .actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr; /* Botões cheios no mobile */
+  gap: 10px;
 }
 
 button {
@@ -87,94 +82,41 @@ button {
   border-radius: 10px;
   padding: 10px 14px;
   font-weight: 600;
+  min-height: var(--touch-target);
 }
 
-.primary {
-  background: var(--primary);
-  color: var(--primary-contrast);
-}
-.secondary {
-  background: transparent;
-  color: var(--text);
-}
-.ghost {
-  background: transparent;
-  color: var(--muted);
-}
-
-.divider {
-  border: none;
-  height: 1px;
-  background: var(--border);
-  margin: 12px 0;
-}
-
-#status {
-  min-height: 24px;
-  margin-bottom: 12px;
-  color: var(--muted);
-  font-size: .95rem;
-}
-
-.verse-card {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
-  background: rgba(255,255,255,0.03);
-}
-
-.verse-header h2 {
-  margin: 0 0 8px;
-  font-size: 1.2rem;
-  color: var(--accent);
-}
+.primary { background: var(--primary); color: var(--primary-contrast); }
+.secondary { background: transparent; color: var(--text); }
+.ghost { background: transparent; color: var(--muted); border-color: transparent; }
 
 .verse-text {
-  line-height: 1.6;
-  font-size: 1.05rem;
-}
-
-.search-results {
-  margin-top: 16px;
-}
-
-.search-results h2 {
-  margin: 0 0 8px;
+  line-height: 1.8;
   font-size: 1.1rem;
 }
 
-.results-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: 8px;
+/* Layout Desktop: Duas Colunas */
+@media (min-width: 768px) {
+  .container {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    align-items: start;
+  }
+
+  .controls {
+    position: sticky;
+    top: 20px;
+  }
+
+  .actions {
+    grid-template-columns: auto auto;
+  }
 }
 
-.result-item {
-  padding: 12px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-}
-
-.result-item .meta {
-  font-size: .85rem;
-  color: var(--muted);
-  margin-bottom: 6px;
-}
-.result-item .snippet {
-  font-size: .98rem;
-  line-height: 1.5;
-}
-
-.error {
-  color: var(--danger);
-}
-
-.app-footer {
-  text-align: center;
-  padding: 16px;
-  color: var(--muted);
-  font-size: .9rem;
-}
+/* Outros estilos auxiliares */
+.divider { border: none; height: 1px; background: var(--border); margin: 20px 0; }
+#status { min-height: 24px; margin-bottom: 12px; color: var(--muted); font-size: .95rem; }
+.verse-card { border: 1px solid var(--border); border-radius: 12px; padding: 16px; background: rgba(255,255,255,0.03); }
+.verse-header h2 { margin: 0 0 12px; color: var(--accent); }
+.results-list { list-style: none; padding: 0; display: grid; gap: 8px; }
+.result-item { padding: 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 10px; }
+.error { color: var(--danger); }

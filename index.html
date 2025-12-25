@@ -1,79 +1,79 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bíblia — Célula Ouro Fino</title>
-  <link rel="stylesheet" href="./style.css" />
-</head>
-<body>
-  <header class="app-header">
-    <h1>Bíblia</h1>
-    <p class="subtitle">Selecione versão, livro e capítulo para exibir o texto completo.</p>
-  </header>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <title>Bíblia — Leitura Online</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>Bíblia</h1>
+      <p class="subtitle">Selecione a versão, livro e capítulo.</p>
+    </header>
 
-  <main class="container">
-    <section class="controls">
-      <div class="field">
-        <label for="versionSelect">Versão</label>
-        <select id="versionSelect" aria-label="Selecionar versão"></select>
-      </div>
-
-      <div class="field">
-        <label for="bookSelect">Livro</label>
-        <select id="bookSelect" aria-label="Selecionar livro"></select>
-      </div>
-
-      <div class="row">
+    <main class="container">
+      <aside class="controls">
         <div class="field">
-          <label for="chapterInput">Capítulo</label>
-          <input id="chapterInput" type="number" min="1" placeholder="1" />
+          <label for="versionSelect">Versão</label>
+          <select id="versionSelect" aria-label="Selecionar versão"></select>
         </div>
+
         <div class="field">
-          <label for="verseInput">Versículo (opcional)</label>
-          <input id="verseInput" type="number" min="1" placeholder="1" />
+          <label for="bookSelect">Livro</label>
+          <select id="bookSelect" aria-label="Selecionar livro"></select>
         </div>
-      </div>
 
-      <div class="actions">
-        <button id="loadChapterBtn" class="primary">Exibir capítulo</button>
-      </div>
-
-      <hr class="divider" />
-
-      <div class="search">
-        <div class="field">
-          <label for="searchInput">Buscar palavra‑chave</label>
-          <input id="searchInput" type="search" placeholder="Ex.: fé, amor, esperança" />
+        <div class="row">
+          <div class="field">
+            <label for="chapterInput">Capítulo</label>
+            <input id="chapterInput" type="number" min="1" placeholder="1" />
+          </div>
+          <div class="field">
+            <label for="verseInput">Versículo (opcional)</label>
+            <input id="verseInput" type="number" min="1" placeholder="1" />
+          </div>
         </div>
+
         <div class="actions">
-          <button id="searchBtn" class="secondary">Buscar</button>
-          <button id="clearSearchBtn" class="ghost">Limpar</button>
+          <button id="loadChapterBtn" class="primary">Exibir capítulo</button>
         </div>
-      </div>
-    </section>
 
-    <section class="output">
-      <div id="status" role="status" aria-live="polite"></div>
+        <hr class="divider" />
 
-      <article id="chapterDisplay" class="verse-card" hidden>
-        <header class="verse-header">
-          <h2 id="chapterTitle"></h2>
-        </header>
-        <div id="chapterText" class="verse-text"></div>
-      </article>
+        <div class="search">
+          <div class="field">
+            <label for="searchInput">Buscar palavra‑chave</label>
+            <input id="searchInput" type="search" placeholder="Ex.: fé, amor, esperança" />
+          </div>
+          <div class="actions">
+            <button id="searchBtn" class="secondary">Buscar</button>
+            <button id="clearSearchBtn" class="ghost">Limpar</button>
+          </div>
+        </div>
+      </aside>
 
-      <section id="searchResults" class="search-results" hidden>
-        <h2>Resultados da busca</h2>
-        <ul id="resultsList" class="results-list"></ul>
+      <section class="output">
+        <div id="status" role="status" aria-live="polite"></div>
+
+        <article id="chapterDisplay" class="verse-card" hidden>
+          <header class="verse-header">
+            <h2 id="chapterTitle"></h2>
+          </header>
+          <div id="chapterText" class="verse-text"></div>
+        </article>
+
+        <section id="searchResults" class="search-results" hidden>
+          <h2>Resultados da busca</h2>
+          <ul id="resultsList" class="results-list"></ul>
+        </section>
       </section>
-    </section>
-  </main>
+    </main>
 
-  <footer class="app-footer">
-    <p>Bíblia desenvolvida por claudfatec@gmail.com. Versão 1.0.1 - Dezembro de 2025</p>
-  </footer>
+    <footer class="app-footer">
+      <p>Dados bíblicos via JSON. Frontend responsivo em HTML, CSS e JS.</p>
+    </footer>
 
-  <script src="./script.js"></script>
-</body>
+    <script src="./script.js"></script>
+  </body>
 </html>
