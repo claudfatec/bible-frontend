@@ -65,9 +65,9 @@ select, input {
 }
 
 .row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  display: block;
+  /* grid-template-columns: 1fr 1fr; */
+  /* gap: 12px; */
 }
 
 .actions {
