@@ -16,7 +16,7 @@ O sistema consome arquivos JSON hospedados no repositório [forkbible](https://g
 
 ---
 
-### ��� Estrutura dos dados
+## ��� Estrutura dos dados
 
 Cada versão é um arquivo JSON no formato:
 
