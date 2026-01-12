@@ -14,7 +14,7 @@ O sistema consome arquivos JSON hospedados no repositório [forkbible](https://g
 - Destaque opcional de um versículo específico dentro do capítulo exibido.
 - Interface responsiva e leve, sem dependências externas.
 
----
+----
 
 ## ��� Estrutura dos dados
 
