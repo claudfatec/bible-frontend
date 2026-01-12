@@ -12,17 +12,37 @@
       <p class="subtitle">Selecione a versão, livro e capítulo.</p>
     </header>
 
-    <main class="container">
-      <aside class="controls">
-        <div class="field">
-          <label for="versionSelect">Versão</label>
-          <select id="versionSelect" aria-label="Selecionar versão"></select>
-        </div>
+  <main class="container">
+    <section class="controls">
+      <div class="field">
+        <label for="versionSelect">Versão</label>
+        <select id="versionSelect" aria-label="Selecionar versão"></select>
+      </div>
 
-        <div class="field">
-          <label for="bookSelect">Livro</label>
-          <select id="bookSelect" aria-label="Selecionar livro"></select>
-        </div>
+      <div class="field">
+        <label for="bookSelect">Livro</label>
+        <select id="bookSelect" aria-label="Selecionar livro"></select>
+      </div>
+
+      <div class="row">
+  <div class="field">
+    <label for="chapterSelect">Capítulo</label>
+    <select id="chapterSelect"></select>
+  </div>
+  <div class="field">
+    <label for="verseSelect">Versículo (opcional)</label>
+    <select id="verseSelect">
+      <option value="">Todos</option>
+    </select>
+  </div>
+</div>
+
+
+      <div class="actions">
+        <button id="loadChapterBtn" class="primary">Exibir capítulo</button>
+      </div>
+
+      <hr class="divider" />
 
         <div class="row">
           <div class="field">
