@@ -25,15 +25,18 @@
       </div>
 
       <div class="row">
-        <div class="field">
-          <label for="chapterInput">Capítulo</label>
-          <input id="chapterInput" type="number" min="1" placeholder="1" />
-        </div>
-        <div class="field">
-          <label for="verseInput">Versículo (opcional)</label>
-          <input id="verseInput" type="number" min="1" placeholder="1" />
-        </div>
-      </div>
+  <div class="field">
+    <label for="chapterSelect">Capítulo</label>
+    <select id="chapterSelect"></select>
+  </div>
+  <div class="field">
+    <label for="verseSelect">Versículo (opcional)</label>
+    <select id="verseSelect">
+      <option value="">Todos</option>
+    </select>
+  </div>
+</div>
+
 
       <div class="actions">
         <button id="loadChapterBtn" class="primary">Exibir capítulo</button>
