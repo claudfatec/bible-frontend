@@ -42,3 +42,14 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
+  copy-to-branches:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Copy To Branches Action
+        uses: planetoftheweb/copy-to-branches@v1.2
+        env:
+          key: main
