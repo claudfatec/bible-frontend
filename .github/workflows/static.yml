@@ -23,29 +23,9 @@ concurrency:
 
 jobs:
   # Single deploy to developmentenvironment
-  develop:
-    environment:
-      name: github-pages-dev
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Upload artifact dev
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Upload entire repository
-          path: '.'
-      - name: Deploy to GitHub Pages dev
-        id: deployment
-        uses: actions/deploy-pages@v4
-  # Single deploy job since we're just deploying
   deploy:
-    needs: develop
     environment:
-      name: github-pages-prod
+      name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
@@ -59,6 +39,6 @@ jobs:
           # Upload entire repository
           path: '.'
           overwrite: true
-      - name: Deploy to GitHub Pages prod
+      - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
