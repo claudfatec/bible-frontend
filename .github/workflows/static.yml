@@ -1,13 +1,18 @@
-## Simple workflow for deploying static content to GitHub Pages
+## Simple workflow for deploying static content to GitHub Pages and test1
 name: Deploy static content to Pages
 
+# When this action will be executed
 on:
-  # Runs on pushes targeting the default branch
+  # Automatically trigger it when detected changes in repo
   push:
-    branches: ["main"]
+    branches: 
+      [ main ]
+    paths:
+    - '**'
+    - '.github/workflows/teste1-AutoDeployTrigger-b748f45b-c30f-4a68-b7cc-489ce5951cfd.yml'
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+  # Allow manual trigger 
+  workflow_dispatch:      
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -22,7 +27,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Single deploy to developmentenvironment
+    # Single deploy to development environment
   deploy:
     environment:
       name: desenvolvimento
@@ -41,3 +46,22 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  # crie um job que realiza deploy em webapps Azure
+  deploy-azure:
+    needs: deploy
+    runs-on: ubuntu-latest
+    name: Build and Deploy Job
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Build and Deploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }} # Permite comentários em PRs
+          action: "upload"
+          #### Ajuste os caminhos abaixo conforme sua estrutura ####
+          app_location: "/"   # Pasta onde está seu index.html
+          api_location: ""    # Se não houver backend, deixe vazio
+          output_location: "" # Para HTML puro, não há pasta de build
