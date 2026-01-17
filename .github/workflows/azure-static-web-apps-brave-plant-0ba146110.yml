@@ -3,10 +3,10 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    types: [opened, synchronize, reopened, closed]
-    branches:
-      - main
+  #pull_request:
+  #  types: [opened, synchronize, reopened, closed]
+  #  branches:
+  #    - main
 
   # Allow manual trigger
   workflow_dispatch:
@@ -77,4 +77,5 @@ jobs:
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_BRAVE_PLANT_0BA146110 }}
+
           action: "close"
